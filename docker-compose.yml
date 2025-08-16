@@ -1,0 +1,28 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: kmapi
+      POSTGRES_USER: km
+      POSTGRES_PASSWORD: km
+    ports: ["5432:5432"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U km -d kmapi"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+  pgadmin:
+    image: dpage/pgadmin4:8
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports: ["5050:80"]
+    depends_on: [db]
+  api:
+    build: .
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    ports: ["8080:8080"]
+    depends_on:
+      db:
+        condition: service_healthy
