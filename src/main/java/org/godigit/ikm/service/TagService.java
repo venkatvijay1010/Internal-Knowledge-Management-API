@@ -1,4 +1,5 @@
 package org.godigit.ikm.service;
+import lombok.Builder;
 import org.godigit.ikm.entity.Tag;
 import org.godigit.ikm.repository.TagRepository;
 import lombok.RequiredArgsConstructor;
