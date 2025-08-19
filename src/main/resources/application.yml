@@ -28,6 +28,7 @@ spring:
     password: km
   flyway:
     enabled: true
+    baseline-on-migrate: true
 
 server:
   port: 8080
