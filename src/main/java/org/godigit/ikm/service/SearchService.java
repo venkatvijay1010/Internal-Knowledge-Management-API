@@ -12,7 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors; // needed if you're on Java 11
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -37,11 +38,10 @@ public class SearchService {
             pageable
     );
 
-    // If you're on Java 16+, you can use .toList()
     List<ArticleResponse> items = pageResult.getContent()
             .stream()
             .map(searchMapper::toResponse)
-            .collect(Collectors.toList()); // replace with .toList() on Java 16+
+            .collect(Collectors.toList());
 
     return new SearchResult<>(
             items,
@@ -49,5 +49,46 @@ public class SearchService {
             page,
             size
     );
+  }
+
+  @Transactional(readOnly = true)
+  public ArticleResponse searchById(Long id) {
+    Article article = articleRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Article not found with ID: " + id));
+    return searchMapper.toResponse(article);
+  }
+
+
+  @Transactional(readOnly = true)
+  public List<ArticleResponse> searchByTitle(String title) {
+    List<Article> articles = articleRepository.findByTitleContainingIgnoreCase(title);
+    return articles.stream()
+            .map(searchMapper::toResponse)
+            .collect(Collectors.toList());
+  }
+
+  @Transactional(readOnly = true)
+  public List<ArticleResponse> searchByTags(Set<String> tagNames) {
+    List<Article> articles = articleRepository.findByTagNames(tagNames);
+    return articles.stream()
+            .map(searchMapper::toResponse)
+            .collect(Collectors.toList());
+  }
+
+
+  @Transactional(readOnly = true)
+  public List<ArticleResponse> searchByDepartment(String departmentCode) {
+    List<Article> articles = articleRepository.findByDepartmentCode(departmentCode);
+    return articles.stream()
+            .map(searchMapper::toResponse)
+            .collect(Collectors.toList());
+  }
+
+  @Transactional(readOnly = true)
+  public List<ArticleResponse> searchByKeyword(String keyword) {
+    List<Article> articles = articleRepository.findByBodyContainingIgnoreCase(keyword); // ✅ updated
+    return articles.stream()
+            .map(searchMapper::toResponse)
+            .collect(Collectors.toList());
   }
 }
