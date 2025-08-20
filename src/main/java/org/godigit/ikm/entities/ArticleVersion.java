@@ -1,4 +1,4 @@
-package org.godigit.ikm.entity;
+package org.godigit.ikm.entities;
 import jakarta.persistence.*; import lombok.*;
 @Entity @Table(name="article_versions", uniqueConstraints=@UniqueConstraint(columnNames={"article_id","version"}))
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder

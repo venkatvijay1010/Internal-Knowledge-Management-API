@@ -1,7 +1,7 @@
 package org.godigit.ikm.service;
 
 import org.godigit.ikm.dto.article.*;
-import org.godigit.ikm.entity.*;
+import org.godigit.ikm.entities.*;
 import org.godigit.ikm.mapper.ArticleMapper;
 import org.godigit.ikm.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service

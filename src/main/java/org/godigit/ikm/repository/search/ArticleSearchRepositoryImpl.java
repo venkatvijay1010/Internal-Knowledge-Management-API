@@ -4,9 +4,9 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.*;
-import org.godigit.ikm.entity.Article;
-import org.godigit.ikm.entity.Department;
-import org.godigit.ikm.entity.Tag;
+import org.godigit.ikm.entities.Article;
+import org.godigit.ikm.entities.Department;
+import org.godigit.ikm.entities.Tag;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Repository;
 

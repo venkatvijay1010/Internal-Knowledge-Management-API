@@ -1,4 +1,4 @@
-package org.godigit.ikm.entity;
+package org.godigit.ikm.entities;
 import jakarta.persistence.*; import lombok.*;
 @Entity @Table(name="tags")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder

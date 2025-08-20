@@ -2,7 +2,7 @@ package org.godigit.ikm.mapper;
 
 
 
-import org.godigit.ikm.entity.Tag;
+import org.godigit.ikm.entities.Tag;
 
 import java.util.Set;
 import java.util.stream.Collectors;

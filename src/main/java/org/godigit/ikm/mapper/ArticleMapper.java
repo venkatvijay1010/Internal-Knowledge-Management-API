@@ -1,8 +1,8 @@
 package org.godigit.ikm.mapper;
 
 import org.godigit.ikm.dto.article.ArticleResponse;
-import org.godigit.ikm.entity.Article;
-import org.godigit.ikm.entity.Tag;
+import org.godigit.ikm.entities.Article;
+import org.godigit.ikm.entities.Tag;
 import org.mapstruct.*;
 
 import java.util.Set;

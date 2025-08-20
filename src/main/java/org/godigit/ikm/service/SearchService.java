@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.godigit.ikm.dto.article.ArticleResponse;
 import org.godigit.ikm.dto.search.SearchRequest;
 import org.godigit.ikm.dto.search.SearchResult;
-import org.godigit.ikm.entity.Article;
+import org.godigit.ikm.entities.Article;
 import org.godigit.ikm.mapper.SearchMapper;
 import org.godigit.ikm.repository.ArticleRepository;
 import org.springframework.data.domain.*;
