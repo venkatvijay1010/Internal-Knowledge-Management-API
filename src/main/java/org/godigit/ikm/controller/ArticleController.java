@@ -26,12 +26,12 @@ public class ArticleController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ArticleResponse> update(@PathVariable Long id, @Valid @RequestBody ArticleUpdateRequest req) {
+    public ResponseEntity<ArticleResponse> update(@PathVariable("id") Long id, @Valid @RequestBody ArticleUpdateRequest req) {
         return ResponseEntity.ok(articleService.update(id, req));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
         articleService.delete(id);
         return ResponseEntity.noContent().build();
     }

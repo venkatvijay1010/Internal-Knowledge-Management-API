@@ -1,4 +1,4 @@
-package com.yourorg.kmapi.integration;
+package org.godigit.ikm.integration;
 import org.junit.jupiter.api.BeforeAll;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.testcontainers.containers.PostgreSQLContainer;

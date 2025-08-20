@@ -1,14 +1,19 @@
 package org.godigit.ikm.repository.search;
 
-import org.godigit.ikm.entity.Article;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.*;
+import org.godigit.ikm.entity.Article;
+import org.godigit.ikm.entity.Department;
+import org.godigit.ikm.entity.Tag;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Repository;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 @Repository
 public class ArticleSearchRepositoryImpl implements ArticleSearchRepository {
@@ -17,46 +22,110 @@ public class ArticleSearchRepositoryImpl implements ArticleSearchRepository {
   private EntityManager em;
 
   @Override
-  public Page<Article> search(String keyword, String deptCode, Set<String> tags, Pageable pageable) {
-    StringBuilder sb = new StringBuilder();
-    List<Object> params = new ArrayList<>();
-    sb.append("SELECT a.* FROM articles a ");
-    sb.append("JOIN departments d ON a.department_id = d.id ");
-    sb.append("LEFT JOIN article_tags at ON at.article_id = a.id ");
-    sb.append("LEFT JOIN tags t ON t.id = at.tag_id ");
-    sb.append("WHERE 1=1 ");
+  public Page<Article> search(String keyword,
+                              String departmentCode,
+                              Set<String> tags,
+                              String title,
+                              Long id,
+                              Pageable pageable) {
 
+    CriteriaBuilder cb = em.getCriteriaBuilder();
+
+    // === main query ===
+    CriteriaQuery<Article> cq = cb.createQuery(Article.class);
+    Root<Article> article = cq.from(Article.class);
+    Join<Article, Department> dept = article.join("department", JoinType.LEFT);
+
+    boolean hasTags = tags != null && !tags.isEmpty();
+    Join<Article, Tag> tagJoin = null;
+    if (hasTags) {
+      tagJoin = article.joinSet("tags", JoinType.LEFT);
+    }
+
+    List<Predicate> preds = new ArrayList<>();
+    if (id != null) {
+      preds.add(cb.equal(article.get("id"), id));
+    }
+    if (title != null && !title.isBlank()) {
+      String like = "%" + title.toLowerCase() + "%";
+      preds.add(cb.like(cb.lower(article.get("title")), like));
+    }
     if (keyword != null && !keyword.isBlank()) {
-      sb.append(" AND (unaccent(a.title) ILIKE unaccent(?) OR unaccent(a.body) ILIKE unaccent(?))");
-      String like = "%" + keyword + "%";
-      params.add(like);
-      params.add(like);
+      String like = "%" + keyword.toLowerCase() + "%";
+      preds.add(cb.or(
+              cb.like(cb.lower(article.get("title")), like),
+              cb.like(cb.lower(article.get("body")), like)
+      ));
     }
-    if (deptCode != null && !deptCode.isBlank()) {
-      sb.append(" AND d.code = ?");
-      params.add(deptCode);
+    if (departmentCode != null && !departmentCode.isBlank()) {
+      preds.add(cb.equal(dept.get("code"), departmentCode));
     }
-    if (tags != null && !tags.isEmpty()) {
-      sb.append(" AND t.name = ANY (?)");
-      params.add(tags.toArray(new String[0]));
+    if (hasTags) {
+      preds.add(Objects.requireNonNull(tagJoin).get("name").in(tags)); // ANY-of tags
     }
-    sb.append(" GROUP BY a.id ORDER BY a.updated_at DESC");
 
-    var q = em.createNativeQuery(sb.toString(), Article.class);
-    for (int i = 0; i < params.size(); i++) {
-      q.setParameter(i + 1, params.get(i));
-    }
-    q.setFirstResult((int) pageable.getOffset());
-    q.setMaxResults(pageable.getPageSize());
-    @SuppressWarnings("unchecked")
-    List<Article> content = q.getResultList();
+    cq.select(article).where(preds.toArray(new Predicate[0]));
+    cq.distinct(true); // avoid duplicates with tag joins
 
-    String countSql = "SELECT count(DISTINCT a.id) FROM (" + sb.toString().replace("SELECT a.*", "SELECT a.id") + ") q";
-    var countQ = em.createNativeQuery(countSql);
-    for (int i = 0; i < params.size(); i++) {
-      countQ.setParameter(i + 1, params.get(i));
+    // sorting
+    if (pageable.getSort().isUnsorted()) {
+      cq.orderBy(cb.desc(article.get("updatedAt")));
+    } else {
+      List<Order> orders = new ArrayList<>();
+      for (Sort.Order o : pageable.getSort()) {
+        Path<?> path = resolvePath(article, o.getProperty());
+        orders.add(o.isAscending() ? cb.asc(path) : cb.desc(path));
+      }
+      cq.orderBy(orders);
     }
-    Number total = (Number) countQ.getSingleResult();
-    return new PageImpl<>(content, pageable, total.longValue());
+
+    TypedQuery<Article> query = em.createQuery(cq);
+    query.setFirstResult((int) pageable.getOffset());
+    query.setMaxResults(pageable.getPageSize());
+    List<Article> content = query.getResultList();
+
+    // === count query ===
+    CriteriaQuery<Long> countCq = cb.createQuery(Long.class);
+    Root<Article> countRoot = countCq.from(Article.class);
+    Join<Article, Department> countDept = countRoot.join("department", JoinType.LEFT);
+    Join<Article, Tag> countTagJoin = null;
+    if (hasTags) {
+      countTagJoin = countRoot.joinSet("tags", JoinType.LEFT);
+    }
+
+    List<Predicate> countPreds = new ArrayList<>();
+    if (id != null) countPreds.add(cb.equal(countRoot.get("id"), id));
+    if (title != null && !title.isBlank()) {
+      String like = "%" + title.toLowerCase() + "%";
+      countPreds.add(cb.like(cb.lower(countRoot.get("title")), like));
+    }
+    if (keyword != null && !keyword.isBlank()) {
+      String like = "%" + keyword.toLowerCase() + "%";
+      countPreds.add(cb.or(
+              cb.like(cb.lower(countRoot.get("title")), like),
+              cb.like(cb.lower(countRoot.get("body")), like)
+      ));
+    }
+    if (departmentCode != null && !departmentCode.isBlank()) {
+      countPreds.add(cb.equal(countDept.get("code"), departmentCode));
+    }
+    if (hasTags) {
+      countPreds.add(Objects.requireNonNull(countTagJoin).get("name").in(tags));
+    }
+
+    countCq.select(cb.countDistinct(countRoot)).where(countPreds.toArray(new Predicate[0]));
+    long total = em.createQuery(countCq).getSingleResult();
+
+    return new PageImpl<>(content, pageable, total);
+  }
+
+  @SuppressWarnings("unchecked")
+  private Path<?> resolvePath(Root<Article> root, String property) {
+    if (!property.contains(".")) return root.get(property);
+    Path<?> path = root;
+    for (String p : property.split("\\.")) {
+      path = ((From<?, ?>) path).get(p);
+    }
+    return path;
   }
 }
