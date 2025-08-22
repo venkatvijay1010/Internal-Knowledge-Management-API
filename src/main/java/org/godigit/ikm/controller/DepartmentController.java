@@ -19,33 +19,44 @@ public class DepartmentController {
     private final ArticleRepository articleRepository;
     private final ArticleMapper articleMapper;
 
+    // List departments with pagination
     @GetMapping
-    public ResponseEntity<Page<Department>> list(@RequestParam(defaultValue = "0") int page,
-                                                 @RequestParam(defaultValue = "50") int size) {
+    public ResponseEntity<Page<Department>> list(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "50") int size) {
+
         Pageable pageable = PageRequest.of(Math.max(page, 0), Math.min(Math.max(size, 1), 100));
-        var departments = departmentRepository.findAll(pageable);
+        Page<Department> departments = departmentRepository.findAll(pageable);
         return ResponseEntity.ok(departments);
     }
 
+    // Get department by ID
     @GetMapping("/{id}")
-    public ResponseEntity<Department> get(@PathVariable Long id) {
+    public ResponseEntity<Department> get(@PathVariable("id") Long id) {
         return ResponseEntity.of(departmentRepository.findById(id));
     }
 
+    // Get department by code
     @GetMapping("/by-code/{code}")
-    public ResponseEntity<Department> byCode(@PathVariable String code) {
+    public ResponseEntity<Department> byCode(@PathVariable("code") String code) {
         return ResponseEntity.of(departmentRepository.findByCode(code));
     }
 
-    // Articles within a department (paginated)
+    // Get paginated articles within a department
     @GetMapping("/{id}/articles")
-    public ResponseEntity<Page<ArticleResponse>> articles(@PathVariable Long id,
-                                                          @RequestParam(defaultValue = "0") int page,
-                                                          @RequestParam(defaultValue = "10") int size) {
-        if (departmentRepository.findById(id).isEmpty()) return ResponseEntity.notFound().build();
+    public ResponseEntity<Page<ArticleResponse>> articles(
+            @PathVariable("id") Long id,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size) {
+
+        if (departmentRepository.findById(id).isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
         Pageable pageable = PageRequest.of(Math.max(page, 0), Math.min(Math.max(size, 1), 100));
-        var pageArticles = articleRepository.findByDepartmentId(id, pageable)
+        Page<ArticleResponse> pageArticles = articleRepository.findByDepartmentId(id, pageable)
                 .map(articleMapper::toResponse);
+
         return ResponseEntity.ok(pageArticles);
     }
 }

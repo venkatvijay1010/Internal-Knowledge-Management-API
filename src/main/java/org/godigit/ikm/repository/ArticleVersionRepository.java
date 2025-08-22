@@ -6,6 +6,5 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ArticleVersionRepository extends JpaRepository<ArticleVersion, Long> {
-    List<ArticleVersion> findByArticle_Id(Long articleId);
-    Optional<ArticleVersion> findByArticle_IdAndVersion(Long articleId, Integer version);
+
 }
