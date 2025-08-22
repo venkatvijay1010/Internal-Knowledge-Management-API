@@ -2,6 +2,9 @@ package org.godigit.ikm.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.OffsetDateTime;
 
 @Entity
 @Table(name = "article_versions", uniqueConstraints = @UniqueConstraint(columnNames = {"article_id", "version"}))
@@ -23,4 +26,8 @@ public class ArticleVersion {
     private String title;
     @Column(nullable = false, columnDefinition = "text")
     private String body;
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private OffsetDateTime createdAt;
+
 }

@@ -1,0 +1,1131 @@
+type: collection.insomnia.rest/5.0
+name: Internal-Knowledge-Management-API
+meta:
+  id: wrk_118a511626a4467090073d2a8a9f5242
+  created: 1755771021203
+  modified: 1755771021203
+  description: ""
+collection:
+  - name: SearchController
+    meta:
+      id: fld_af15cd1dd9f04d81bb91265929addff2
+      created: 1755682521777
+      modified: 1755797385506
+      sortKey: -1755682521777
+      description: ""
+    children:
+      - url: localhost:8080/api/search
+        name: Search Articles
+        meta:
+          id: req_a4af414e9a8843d3b192118d9aaa5997
+          created: 1755663545274
+          modified: 1755682546259
+          isPrivate: false
+          description: ""
+          sortKey: -1755682527696
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "id": null,
+              "keyword": "spring",
+              "title": null,
+              "departmentCode": null,
+              "tags": [
+                
+              ],
+              "page": 0,
+              "size": 10
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.4.0
+          - name: Accept
+            value: application/json
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/api/search/by-id?
+        name: Search by ID
+        meta:
+          id: req_16af0c5caea04d50934ee8560f9de370
+          created: 1755682527596
+          modified: 1755683588835
+          isPrivate: false
+          description: ""
+          sortKey: -1755682527596
+        method: GET
+        parameters:
+          - name: id
+            value: "10"
+            disabled: false
+            id: pair_0ae3b295f1ce485f82814cc2fccdb918
+        headers:
+          - name: User-Agent
+            value: insomnia/11.4.0
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url.base_url }}/api/search/by-title?"
+        name: Search by Title
+        meta:
+          id: req_d4e2d12e9eb04eb082463a0cb2f0694d
+          created: 1755682848966
+          modified: 1755683646306
+          isPrivate: false
+          description: ""
+          sortKey: -1755682848966
+        method: GET
+        parameters:
+          - name: title
+            value: spring
+            disabled: false
+            id: pair_dcfc451066204786b3655910959ca294
+        headers:
+          - name: User-Agent
+            value: insomnia/11.4.0
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url.base_url }}/search/by-tags"
+        name: Search by Tags
+        meta:
+          id: req_62aca38f321d4ece8bac56d5af08649f
+          created: 1755682929953
+          modified: 1755683551397
+          isPrivate: false
+          description: ""
+          sortKey: -1755682929953
+        method: GET
+        parameters:
+          - name: tags
+            value: spring,boot
+            disabled: false
+            id: pair_47feeec0455448999941d32156ee1040
+        headers:
+          - name: User-Agent
+            value: insomnia/11.4.0
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{base_url.base_url}}/search/by-department"
+        name: Search by Department Code
+        meta:
+          id: req_f9403ecad7c640bfa038f80e99e2c83b
+          created: 1755683682887
+          modified: 1755684141776
+          isPrivate: false
+          description: ""
+          sortKey: -1755683682887
+        method: GET
+        parameters:
+          - name: departmentCode
+            value: ENG
+            disabled: false
+            id: pair_16d228af649a44ababdc24f2b4775a23
+        headers:
+          - name: User-Agent
+            value: insomnia/11.4.0
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{base_url.base_url}}/search/by-keyword"
+        name: Search by Keyword
+        meta:
+          id: req_0aaa10fd623c43c68fa423aeef4a5311
+          created: 1755684138948
+          modified: 1755684184266
+          isPrivate: false
+          description: ""
+          sortKey: -1755684138948
+        method: GET
+        parameters:
+          - name: keyword
+            value: spring
+            disabled: false
+            id: pair_502cb5e77ebc4ba7b196b7cea7d474d8
+        headers:
+          - name: User-Agent
+            value: insomnia/11.4.0
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+    scripts:
+      afterResponse: ""
+      preRequest: ""
+  - name: ArticleController
+    meta:
+      id: fld_3e90d783b1fc49769e1e32b3ea2d6722
+      created: 1755684329372
+      modified: 1755797401458
+      sortKey: -1755684329372
+      description: ""
+    children:
+      - url: localhost:8080/api/articles/1
+        name: Get Article by ID
+        meta:
+          id: req_7846cedfe85744f69e232dbd48087f10
+          created: 1755663498372
+          modified: 1755761127972
+          isPrivate: false
+          description: ""
+          sortKey: -1755684351597
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.4.0
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: localhost:8080/api/articles/10
+        name: Update Article
+        meta:
+          id: req_d211d339bb6649f0bcedd70e0b0e7c69
+          created: 1755663520435
+          modified: 1755684351518
+          isPrivate: false
+          description: ""
+          sortKey: -1755684351497
+        method: PUT
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "title": "Spring Boot Intro",
+              "body": "Learn from john matthew",
+              "departmentId": 1,
+              "tags": ["spring", "boot", "java"]
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.4.0
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: localhost:8080/api/articles/3
+        name: Delete Article
+        meta:
+          id: req_246cc1fe54934456b3d669c0ff860d87
+          created: 1755663534229
+          modified: 1755778849745
+          isPrivate: false
+          description: ""
+          sortKey: -1755684351547
+        method: DELETE
+        headers:
+          - name: User-Agent
+            value: insomnia/11.4.0
+          - name: X-Role
+            value: ADMIN
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{base_url.base_url}}/articles"
+        name: Create Article
+        meta:
+          id: req_fe22d870f4794f2da99ced7755fd4fad
+          created: 1755684393368
+          modified: 1755795301873
+          isPrivate: false
+          description: ""
+          sortKey: -1755684393368
+        method: POST
+        body:
+          mimeType: application/json
+          text: '{"title":"Sales Excellence through Data and Relationships","body":"Sales
+            is both art and science. While relationships and trust remain
+            central, modern sales organizations rely heavily on data,
+            technology, and process discipline. Customer Relationship Management
+            (CRM) platforms track every interaction, enabling data-driven
+            prioritization. Predictive scoring models suggest which leads are
+            most likely to convert. \n\nThe best sales teams maintain a library
+            of scripts, objection-handling guides, and detailed playbooks. This
+            knowledge base of thousands of words allows new salespeople to ramp
+            up quickly while ensuring consistency in customer interactions.
+            Performance dashboards provide real-time feedback, turning intuition
+            into measurable experiments. \n\nSales excellence requires
+            structured methodologies: SPIN Selling, Challenger Sale, and MEDDIC
+            frameworks guide conversations and discovery. Standard operating
+            procedures (SOPs) define follow-up cadences, demo protocols, and
+            negotiation guardrails. Without this structure, teams rely on
+            heroics instead of scalable systems. \n\nIn the future, sales will
+            integrate even more tightly with marketing and customer success,
+            creating a seamless customer journey. Trust, personalization, and
+            insight-driven engagement will separate winning sales teams from the
+            rest.","departmentId":6,"tags":["sales","crm","relationships","knowledge-base","best-practices"]}'
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.4.0
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+    scripts:
+      afterResponse: ""
+      preRequest: ""
+  - name: Create Article By Department
+    meta:
+      id: fld_f6d1678e5aad45409ea2aea48fe8939c
+      created: 1755762236765
+      modified: 1755797985440
+      sortKey: -1755762236765
+      description: ""
+    children:
+      - url: http://localhost:8080/api/articles
+        name: Create Engineering Article
+        meta:
+          id: req_790ca3f96dca44eabaa4e8d3ad989b06
+          created: 1755762236767
+          modified: 1755770250157
+          isPrivate: false
+          description: ""
+          sortKey: -1755762236767
+        method: POST
+        body:
+          mimeType: application/json
+          text: '{"title":"Engineering Best Practices in Modern Software
+            Teams","body":"Engineering in the 21st century is a balance between
+            velocity and quality. Teams are expected to deliver features faster,
+            but with reliability, security, and maintainability. Best practices
+            begin with version control discipline, code reviews, and continuous
+            integration pipelines. Modern engineering teams embrace DevOps
+            principles, where development and operations are no longer separate
+            silos but collaborate through shared tooling and metrics. Practices
+            like trunk-based development, feature flags, and automated testing
+            allow rapid iteration while controlling risk. \n\nDocumentation is
+            another pillar. Internal knowledge bases, wikis, and article
+            libraries ensure that engineers do not rely solely on tribal
+            knowledge. Standard operating procedures (SOPs) reduce on-call
+            stress by providing clear playbooks for incidents. Mentorship
+            programs and onboarding guides allow new hires to contribute faster.
+            Engineering culture should prize curiosity, psychological safety,
+            and craftsmanship. When individuals feel safe to experiment and
+            admit mistakes, the team evolves faster. \n\nThe future of
+            engineering lies in platform teams that provide self-service
+            capabilities for product teams. Instead of every team reinventing
+            CI/CD pipelines, observability dashboards, or deployment strategies,
+            a dedicated platform team can provide paved roads. Security,
+            compliance, and performance guardrails come by default, freeing
+            developers to focus on solving business problems. Thousands of
+            organizations are documenting these engineering practices in
+            long-form guides so they can be retrieved later via internal search
+            engines. The value of this accumulated knowledge compounds over
+            time, preventing repeated mistakes and amplifying innovation. This
+            is how engineering becomes a multiplier for the
+            business.","departmentId":1,"tags":["engineering","best-practices","devops","guide","knowledge-base"]}'
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.4.0
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/api/articles
+        name: Create Operations Article
+        meta:
+          id: req_3f8d75a92e314266a543e7bb86c41944
+          created: 1755762236772
+          modified: 1755770200090
+          isPrivate: false
+          description: ""
+          sortKey: -1755762236772
+        method: POST
+        body:
+          mimeType: application/json
+          text: '{"title":"Operations Management in Global Supply
+            Chains","body":"Operations is the discipline that translates
+            strategy into execution. In global supply chains, operations
+            managers orchestrate procurement, warehousing, logistics, and
+            customer service under extreme uncertainty. Disruptions like
+            pandemics, geopolitical shifts, and climate events highlight the
+            need for resilient operations. Building resilience requires
+            visibility: real-time dashboards of supplier health, transportation
+            bottlenecks, and warehouse capacity. Predictive analytics can
+            forecast shortages and recommend contingency plans. \n\nOperations
+            is not just about efficiency but also about reliability and trust.
+            Lean principles such as Kaizen (continuous improvement) and value
+            stream mapping reduce waste and increase throughput. Six Sigma
+            methodologies emphasize quality by minimizing defects per million
+            opportunities. Together, these frameworks empower teams to design
+            processes that scale. \n\nDigital operations leverage IoT sensors in
+            warehouses, AI-driven route optimization for logistics, and
+            blockchain-based provenance tracking for supply chains. But
+            technology without disciplined process design leads to chaos.
+            Standard operating procedures (SOPs) must evolve alongside
+            technology. Training frontline staff in these new workflows ensures
+            adoption. \n\nGreat operations teams codify their learnings into
+            detailed articles, runbooks, and searchable repositories. This
+            allows future employees to inherit decades of learning without
+            starting from scratch. Thousands of words of hard-earned wisdom can
+            be compressed into actionable knowledge when properly structured in
+            a knowledge management
+            system.","departmentId":2,"tags":["operations","supply-chain","lean","six-sigma","knowledge-base"]}'
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.4.0
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/api/articles
+        name: Create HR Article
+        meta:
+          id: req_3884d409e5d3467ca305ebeaa25f7fb4
+          created: 1755762236774
+          modified: 1755770164163
+          isPrivate: false
+          description: ""
+          sortKey: -1755762236774
+        method: POST
+        body:
+          mimeType: application/json
+          text: '{"title":"Human Resources and the Future of Work","body":"Human Resources
+            (HR) sits at the heart of organizational culture. Once seen mainly
+            as administrators of payroll and compliance, modern HR functions are
+            strategic partners shaping workforce design, inclusion, and
+            leadership development. The future of HR is being reshaped by hybrid
+            work, gig economy participation, and digital-first collaboration.
+            \n\nRecruitment strategies now emphasize employer branding,
+            candidate experience, and data-driven assessments. Talent pipelines
+            are nurtured over years, not weeks. Employee engagement has moved
+            from annual surveys to continuous listening through pulse checks,
+            anonymous feedback platforms, and AI-driven sentiment analysis.
+            Performance management is shifting from rigid annual reviews to
+            ongoing coaching, peer recognition, and transparent career ladders.
+            \n\nLearning & Development (L&D) is another major focus.
+            Organizations are building libraries of training articles, video
+            modules, and practical SOPs that employees can access on demand.
+            From compliance training to advanced leadership skills, the
+            principle is lifelong learning. Diversity, Equity, and Inclusion
+            (DEI) initiatives further ensure workplaces are fair and innovative.
+            \n\nBy documenting best practices, HR creates a knowledge base that
+            supports consistent decision-making. Thousands of words of policies
+            and playbooks provide clarity on sensitive topics like leave
+            policies, grievance handling, and performance remediation. This
+            consistency strengthens trust between employees and management,
+            ensuring HR is seen not as bureaucracy but as a trusted enabler of
+            growth.","departmentId":3,"tags":["human-resources","future-of-work","engagement","learning","knowledge-base"]}'
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.4.0
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/api/articles
+        name: Create Finance Article
+        meta:
+          id: req_235dbbe25fa14f52b4704485a090fb2c
+          created: 1755762236776
+          modified: 1755770130248
+          isPrivate: false
+          description: ""
+          sortKey: -1755762236776
+        method: POST
+        body:
+          mimeType: application/json
+          text: '{"title":"Finance in the Age of Digital Transformation","body":"Finance
+            is undergoing a radical transformation. Once dominated by
+            spreadsheets and periodic reporting, finance teams are now expected
+            to provide real-time insights, risk forecasts, and strategic advice.
+            Digital transformation brings cloud-based ERPs, robotic process
+            automation (RPA), and AI-driven forecasting into the finance
+            function. \n\nThe finance department no longer simply closes the
+            books. It builds predictive models for cash flow, optimizes working
+            capital, and advises on mergers & acquisitions. Finance
+            professionals are asked to become data analysts, storytellers, and
+            technology adopters. At the same time, regulatory compliance grows
+            stricter, requiring precise documentation and auditability.
+            \n\nArticles and knowledge bases serve as living playbooks for
+            finance teams: guidelines on internal controls, SOPs for
+            reconciliations, and detailed write-ups on emerging accounting
+            standards. A well-maintained finance knowledge base prevents
+            mistakes and accelerates onboarding. Thousands of words worth of
+            detailed documentation ensures that institutional memory does not
+            disappear when employees leave. \n\nThe modern finance leader must
+            balance stability with innovation. They must protect against fraud,
+            comply with regulations, and manage risk while enabling
+            experimentation in pricing, investment, and product strategies.
+            Finance is both the guardian and the enabler of organizational
+            ambition.","departmentId":4,"tags":["finance","accounting","risk","digital-transformation","knowledge-base"]}'
+        headers:
+          - name: User-Agent
+            value: insomnia/11.4.0
+          - name: Content-Type
+            value: application/json
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url.base_url }}/articles"
+        name: Create Marketing Article
+        meta:
+          id: req_e34e879172ea41cebb9dac7fc59387a5
+          created: 1755762236779
+          modified: 1755770061074
+          isPrivate: false
+          description: ""
+          sortKey: -1755762236779
+        method: POST
+        body:
+          mimeType: application/json
+          text: '{"title":"Marketing in the Digital Age","body":"Marketing has shifted
+            from one-way broadcast to interactive storytelling. The rise of
+            social media, influencer culture, and personalized advertising
+            requires marketers to master not just creativity but also data
+            science. Campaigns are now optimized in real time, A/B tested, and
+            measured with precision attribution models. \n\nContent marketing,
+            SEO, and brand storytelling create long-term engagement by offering
+            value beyond product promotion. Brands maintain blogs, podcasts, and
+            YouTube channels filled with thousands of words of helpful guides
+            and authentic narratives. Customers are more discerning; they reward
+            transparency, social responsibility, and cultural relevance.
+            \n\nMarketing teams rely heavily on playbooks and SOPs: how to run a
+            paid campaign, how to respond to a PR crisis, how to engage with
+            influencers. A knowledge base of marketing experiments, results, and
+            insights allows teams to avoid repeating failed tactics and double
+            down on winning strategies. \n\nThe future of marketing will be
+            AI-driven personalization at scale: dynamic creatives, predictive
+            churn prevention, and conversational commerce. Yet, human creativity
+            and emotional intelligence remain irreplaceable. The best marketing
+            combines data precision with human
+            empathy.","departmentId":5,"tags":["marketing","digital","seo","storytelling","knowledge-base"]}'
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.4.0
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url.base_url }}/articles"
+        name: Create Sales Article
+        meta:
+          id: req_30299e46d3834e4e9ffac524d32ba25f
+          created: 1755762236780
+          modified: 1755778857410
+          isPrivate: false
+          description: ""
+          sortKey: -1755762236780
+        method: POST
+        body:
+          mimeType: application/json
+          text: '{"title":"Sales Excellence through Data and Relationships","body":"Sales
+            is both art and science. While relationships and trust remain
+            central, modern sales organizations rely heavily on data,
+            technology, and process discipline. Customer Relationship Management
+            (CRM) platforms track every interaction, enabling data-driven
+            prioritization. Predictive scoring models suggest which leads are
+            most likely to convert. \n\nThe best sales teams maintain a library
+            of scripts, objection-handling guides, and detailed playbooks. This
+            knowledge base of thousands of words allows new salespeople to ramp
+            up quickly while ensuring consistency in customer interactions.
+            Performance dashboards provide real-time feedback, turning intuition
+            into measurable experiments. \n\nSales excellence requires
+            structured methodologies: SPIN Selling, Challenger Sale, and MEDDIC
+            frameworks guide conversations and discovery. Standard operating
+            procedures (SOPs) define follow-up cadences, demo protocols, and
+            negotiation guardrails. Without this structure, teams rely on
+            heroics instead of scalable systems. \n\nIn the future, sales will
+            integrate even more tightly with marketing and customer success,
+            creating a seamless customer journey. Trust, personalization, and
+            insight-driven engagement will separate winning sales teams from the
+            rest.","departmentId":6,"tags":["sales","crm","relationships","knowledge-base","best-practices"]}'
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.4.0
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url.base_url}}/articles"
+        name: Create IT Article
+        meta:
+          id: req_a502ab8ffcc14b0a876dbdab7988ba54
+          created: 1755762236782
+          modified: 1755778837689
+          isPrivate: false
+          description: ""
+          sortKey: -1755762236782
+        method: POST
+        body:
+          mimeType: application/json
+          text: >-
+            {
+            	"title":"Information Technology as the Digital Backbone",
+             
+             "body":"Information Technology (IT) is no longer a support function—it is the backbone of modern enterprises. From cloud infrastructure to cybersecurity, IT enables every department to operate. IT departments manage identity systems, communication platforms, networks, and applications. Downtime is not just an inconvenience; it is a financial risk. \n\nModern IT practices emphasize resilience, scalability, and security. DevOps, cloud-native architectures, and zero-trust security frameworks define the new playbook. IT teams publish SOPs for incident response, patch management, and disaster recovery. These guides can run into thousands of words, ensuring clarity when high-pressure incidents strike. \n\nKnowledge bases are critical for IT: troubleshooting guides, configuration documentation, and architecture diagrams prevent repeated errors. Without them, institutional memory disappears with staff turnover. Automation further reduces toil: infrastructure as code, self-healing scripts, and chatbots streamline repetitive tasks. \n\nThe IT department is also tasked with enabling digital transformation: migrating workloads to cloud, securing hybrid work, and integrating SaaS platforms. IT leaders must balance agility with governance, innovation with compliance.",
+             
+             "departmentId":7,
+             
+             "tags":["it","cloud","cybersecurity","infrastructure","knowledge-base"]
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.4.0
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url.base_url }}/articles"
+        name: Create R&D Article
+        meta:
+          id: req_b2f328037b6a4759b87c569baf5c9373
+          created: 1755762236784
+          modified: 1755795281276
+          isPrivate: false
+          description: ""
+          sortKey: -1755762236784
+        method: POST
+        body:
+          mimeType: application/json
+          text: '{"title":"Research and Development: From Curiosity to
+            Innovation","body":"Research and Development (R&D) transforms
+            curiosity into tangible value. Whether in pharmaceuticals, software,
+            or manufacturing, R&D teams explore uncharted territory. They
+            experiment, fail, learn, and iterate. The knowledge they produce is
+            the foundation of future products and services. \n\nR&D
+            documentation is essential: experiment protocols, test results, and
+            retrospective analyses often run thousands of words. Without
+            structured capture, these insights vanish. Modern R&D teams rely on
+            electronic lab notebooks, versioned repositories, and searchable
+            article databases. A strong knowledge base ensures reproducibility
+            and accelerates innovation. \n\nR&D thrives on collaboration:
+            interdisciplinary teams blend engineering, design, and business.
+            Governance frameworks define intellectual property management,
+            ethical review, and funding allocation. Standard operating
+            procedures (SOPs) ensure experiments are safe, compliant, and
+            comparable across sites. \n\nThe future of R&D will integrate AI for
+            hypothesis generation, robotics for automated experimentation, and
+            cloud platforms for global collaboration. Yet the essence remains
+            human curiosity. By documenting discoveries in long-form articles,
+            organizations ensure that their hard-won insights fuel not just one
+            project, but generations of
+            innovation.","departmentId":8,"tags":["research","innovation","experimentation","knowledge-base","best-practices"]}'
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.4.0
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+    scripts:
+      afterResponse: ""
+      preRequest: ""
+  - name: TagController
+    meta:
+      id: fld_9af28aade89e4bb3ac7293cf0baad6e8
+      created: 1755798037806
+      modified: 1755798587923
+      sortKey: -1755798037806
+      description: ""
+    children:
+      - url: "{{ base_url.base_url }}/api/tags"
+        name: Create Tag
+        meta:
+          id: req_93bd496a74034480a74f4d1dfac391ba
+          created: 1755798331704
+          modified: 1755798423180
+          isPrivate: false
+          description: ""
+          sortKey: -1755798331704
+        method: POST
+        body:
+          mimeType: application/json
+          text: '{ "name": "spring" }'
+        headers:
+          - name: Content-Type
+            value: application/json
+            id: pair_1345dc41a0c54669a880d2df17e4225f
+          - name: User-Agent
+            value: insomnia/11.4.0
+            id: pair_4c3926877fe04413933bfba13c81753a
+          - id: pair_34058524f9964ea38710ebeef1a79e92
+            name: X-Role
+            value: CONTRIBUTOR/ADMIN
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url.base_url }}/api/tags"
+        name: List Tags
+        meta:
+          id: req_44d40746a14647308fc18d6bfc5e647b
+          created: 1755798426536
+          modified: 1755798515122
+          isPrivate: false
+          description: ""
+          sortKey: -1755798426536
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.4.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ base_url.base_url }}/api/tags"
+        name: Search tags by name
+        meta:
+          id: req_ade10d899cda4a329f4f19aa5a846421
+          created: 1755798543594
+          modified: 1755798592892
+          isPrivate: false
+          description: ""
+          sortKey: -1755798543594
+        method: GET
+        parameters:
+          - id: pair_d4cd3b83d66243e0824551cc977ab506
+            name: tags
+            value: java
+            description: ""
+            disabled: false
+        headers:
+          - name: User-Agent
+            value: insomnia/11.4.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: ""
+        name: Get tag by ID
+        meta:
+          id: req_5daf7240e3cb4a07ad4438863f9c62ef
+          created: 1755832413715
+          modified: 1755832421039
+          isPrivate: false
+          description: ""
+          sortKey: -1755832413715
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.4.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: ""
+        name: Delete tag
+        meta:
+          id: req_0457f03375a5429eb7d67ceabd5d87f9
+          created: 1755832436591
+          modified: 1755832514298
+          isPrivate: false
+          description: ""
+          sortKey: -1755832436591
+        method: DELETE
+        headers:
+          - name: User-Agent
+            value: insomnia/11.4.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: ""
+        name: Get articles under a tag
+        meta:
+          id: req_825e41662bbc4de7b05c4152d45139fc
+          created: 1755832452495
+          modified: 1755832457103
+          isPrivate: false
+          description: ""
+          sortKey: -1755832452495
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.4.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: ""
+        name: Attach tags to article
+        meta:
+          id: req_4b2bf6954c0348c29bf6f45820a27f59
+          created: 1755832476014
+          modified: 1755832506467
+          isPrivate: false
+          description: ""
+          sortKey: -1755832476014
+        method: POST
+        headers:
+          - name: User-Agent
+            value: insomnia/11.4.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: DepartmentController
+    meta:
+      id: fld_256d7aac54854f7c8de8548b6a27c19d
+      created: 1755798055254
+      modified: 1755832579627
+      sortKey: -1755798055254
+      description: ""
+    children:
+      - url: ""
+        name: List departments
+        meta:
+          id: req_507540b0560844019e1e1f869c6fe09f
+          created: 1755832539984
+          modified: 1755832553966
+          isPrivate: false
+          description: ""
+          sortKey: -1755832539984
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.4.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: ""
+        name: Get department by ID
+        meta:
+          id: req_10d2a7b9538e4b13a68fe2eb5e43b4f8
+          created: 1755832584268
+          modified: 1755832590381
+          isPrivate: false
+          description: ""
+          sortKey: -1755832584268
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.4.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: ""
+        name: Get department by code
+        meta:
+          id: req_56c96789141e4340abc1f56847025a11
+          created: 1755832599629
+          modified: 1755833197713
+          isPrivate: false
+          description: ""
+          sortKey: -1755832599629
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.4.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: ""
+        name: Articles in a department
+        meta:
+          id: req_7b5d3741dc5f4606b60a726b2ff98190
+          created: 1755832612614
+          modified: 1755832617078
+          isPrivate: false
+          description: ""
+          sortKey: -1755832612614
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.4.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: ArticleVersionController
+    meta:
+      id: fld_7f4654f2ca7345968dd25ca22584bf8d
+      created: 1755798071935
+      modified: 1755798071935
+      sortKey: -1755798071935
+      description: ""
+    children:
+      - url: ""
+        name: List all versions of an article
+        meta:
+          id: req_18f7d2514df94d42bc48d654176766d0
+          created: 1755832572966
+          modified: 1755832649125
+          isPrivate: false
+          description: ""
+          sortKey: -1755832576388
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.4.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: ""
+        name: Get a specific version
+        meta:
+          id: req_9783a5fd30f846a8bc121d13fb81987e
+          created: 1755832658261
+          modified: 1755832665021
+          isPrivate: false
+          description: ""
+          sortKey: -1755832658261
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.4.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: ""
+        name: Snapshot current article as new version
+        meta:
+          id: req_c6455bb46e454af4a7d8bf97117b0b9b
+          created: 1755832674574
+          modified: 1755832682430
+          isPrivate: false
+          description: ""
+          sortKey: -1755832674574
+        method: POST
+        headers:
+          - name: User-Agent
+            value: insomnia/11.4.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_0172559d35b14564be8844e9ad9e41b8
+    created: 1755663197026
+    modified: 1755798465413
+  cookies:
+    - key: JSESSIONID
+      value: CD316D0908682D371B4AC5D283C77212
+      domain: localhost
+      path: /
+      httpOnly: true
+      hostOnly: true
+      creation: 2025-08-20T05:32:11.310Z
+      lastAccessed: 2025-08-21T17:47:45.413Z
+      id: 84645b46-e325-4b9b-89bc-811bccab046c
+environments:
+  name: Base Environment
+  meta:
+    id: env_6617fa7cbf4f4ec2bcc9b3c66ba93462
+    created: 1755663197023
+    modified: 1755683556396
+    isPrivate: false
+  data:
+    base_url:
+      base_url: localhost:8080/api
