@@ -1,0 +1,548 @@
+got it—my bad. here’s the **plain, normal flow** with the usual commands (exact copy-paste ready). this goes from Spring Initializr → first push → 3 branches (**Babu, vijay, john**) → lots of simple commits (you can repeat the same 3 commands).
+
+---
+
+# 0) set your git identity (once)
+
+```bash
+git config --global user.name  "Your Name"
+git config --global user.email "your.email@example.com"
+git config --global init.defaultBranch main
+```
+
+---
+
+# 1) create fresh spring boot project (initializr)
+
+Option A (download zip in browser):
+Open [https://start.spring.io](https://start.spring.io) → pick:
+
+* Project: Maven
+* Language: Java
+* Spring Boot: 3.x
+* Group: org.godigit
+* Artifact: ikm-api
+* Java: 21
+* Dependencies: Spring Web, Validation, Spring Data JPA, PostgreSQL, Lombok, Flyway, Actuator, (optional) OpenAPI/MapStruct
+
+Download the zip → put it somewhere, say `C:\Users\you\Downloads\ikm.zip`.
+
+Then in **Git Bash**:
+
+```bash
+mkdir -p ~/work && cd ~/work
+tar -xf /c/Users/you/Downloads/ikm.zip   # or: unzip /c/Users/you/Downloads/ikm.zip
+cd ikm-api
+```
+
+(If you already have your code, just copy it over `src`/`pom.xml` now.)
+
+---
+
+# 2) add basics (.gitignore, README), init repo, first push
+
+```bash
+# .gitignore (Java/Maven)
+cat > .gitignore <<'EOF'
+/target/
+!.mvn/wrapper/maven-wrapper.jar
+**/*.iml
+.idea/
+.vscode/
+*.log
+.DS_Store
+.env
+EOF
+
+# README (minimal)
+cat > README.md <<'EOF'
+# Internal Knowledge Management API
+
+Spring Boot backend.
+Run: `mvn spring-boot:run`
+Test: `mvn test`
+EOF
+
+# init + first commit
+git init
+git add .
+git commit -m "chore: initial spring boot project + basics"
+```
+
+Create an empty repo on GitHub (web UI) and copy the HTTPS URL (e.g. `https://github.com/<you>/ikm-api.git`), then:
+
+```bash
+git remote add origin https://github.com/<you>/ikm-api.git
+git branch -M main
+git push -u origin main
+```
+
+---
+
+# 3) create the three branches and push
+
+```bash
+git checkout -b Babu   && git push -u origin Babu
+git checkout main
+git checkout -b vijay  && git push -u origin vijay
+git checkout main
+git checkout -b john   && git push -u origin john
+git checkout main
+```
+
+---
+
+# 4) normal “many commits” workflow (repeat these 3 lines)
+
+You’ll do tiny edits (docs, comments, small file moves) and commit each time. **Same three commands** every time:
+
+```bash
+# make a tiny change (edit a file), then:
+git add .
+git commit -m "your message here"
+git push
+```
+
+### Example run per branch (copy/paste these as you make small edits)
+
+#### Branch: Babu (≈20 commits)
+
+```bash
+git checkout Babu
+# 1
+git add . && git commit -m "docs: add project overview to README" && git push
+# 2
+git add . && git commit -m "chore: add .editorconfig" && git push
+# 3
+git add . && git commit -m "build: update pom.xml plugin versions" && git push
+# 4
+git add . && git commit -m "feat(config): add CORS config" && git push
+# 5
+git add . && git commit -m "feat(security): role enum + notes" && git push
+# 6
+git add . && git commit -m "feat(dto): article request/response classes" && git push
+# 7
+git add . && git commit -m "feat(entity): Article, ArticleVersion, Department" && git push
+# 8
+git add . && git commit -m "feat(repo): ArticleRepository + TagRepository" && git push
+# 9
+git add . && git commit -m "feat(service): ArticleService skeleton" && git push
+# 10
+git add . && git commit -m "feat(controller): ArticleController endpoints" && git push
+# 11
+git add . && git commit -m "docs: API endpoints table" && git push
+# 12
+git add . && git commit -m "test: add ArticleServiceTest skeleton" && git push
+# 13
+git add . && git commit -m "refactor: clean imports, formatting" && git push
+# 14
+git add . && git commit -m "perf(repo): add index comment for LIKE search" && git push
+# 15
+git add . && git commit -m "fix: null checks in update flow" && git push
+# 16
+git add . && git commit -m "docs: CONTRIBUTING.md with steps" && git push
+# 17
+git add . && git commit -m "ci: add basic Maven workflow" && git push
+# 18
+git add . && git commit -m "docs: add runbook for local dev" && git push
+# 19
+git add . && git commit -m "style: README headings tidy" && git push
+# 20
+git add . && git commit -m "chore: update .gitignore (target/, logs)" && git push
+```
+
+#### Branch: vijay (≈20 commits)
+
+```bash
+git checkout vijay
+# 1
+git add . && git commit -m "docs: add search flow diagram (stub)" && git push
+# 2
+git add . && git commit -m "feat(search): GET /search param docs" && git push
+# 3
+git add . && git commit -m "refactor(controller): Javadoc for endpoints" && git push
+# 4
+git add . && git commit -m "feat(service): SearchService wire-up" && git push
+# 5
+git add . && git commit -m "fix: null-safe keyword handling" && git push
+# 6
+git add . && git commit -m "test: SearchService tests (stub)" && git push
+# 7
+git add . && git commit -m "docs: tagging strategy" && git push
+# 8
+git add . && git commit -m "feat(tag): TagController basic CRUD" && git push
+# 9
+git add . && git commit -m "feat(repo): TagRepository methods" && git push
+# 10
+git add . && git commit -m "docs: example Postman collection note" && git push
+# 11
+git add . && git commit -m "refactor: extract validation annotations" && git push
+# 12
+git add . && git commit -m "chore: add .vscode/extensions.json" && git push
+# 13
+git add . && git commit -m "feat(openapi): add springdoc config" && git push
+# 14
+git add . && git commit -m "docs: API status codes section" && git push
+# 15
+git add . && git commit -m "style: reflow markdown to 100 cols" && git push
+# 16
+git add . && git commit -m "perf: query hints on search impl (comment)" && git push
+# 17
+git add . && git commit -m "ci: ensure PRs target main" && git push
+# 18
+git add . && git commit -m "chore: sample .env.example" && git push
+# 19
+git add . && git commit -m "docs: department endpoints overview" && git push
+# 20
+git add . && git commit -m "fix: paging defaults in search" && git push
+```
+
+#### Branch: john (≈20 commits)
+
+```bash
+git checkout john
+# 1
+git add . && git commit -m "docs: versioning and rollback notes" && git push
+# 2
+git add . && git commit -m "feat(versioning): create ArticleVersion steps" && git push
+# 3
+git add . && git commit -m "refactor: mapper package (MapStruct) stubs" && git push
+# 4
+git add . && git commit -m "feat(mapper): ArticleMapper interface" && git push
+# 5
+git add . && git commit -m "test: mapper tests (stub)" && git push
+# 6
+git add . && git commit -m "fix: transaction boundaries in service" && git push
+# 7
+git add . && git commit -m "docs: Flyway migration guide" && git push
+# 8
+git add . && git commit -m "feat(db): add Flyway migration V1__init.sql" && git push
+# 9
+git add . && git commit -m "feat(db): V2__add_indexes.sql" && git push
+# 10
+git add . && git commit -m "docs: README run migrations section" && git push
+# 11
+git add . && git commit -m "refactor: package-by-layer cleanup" && git push
+# 12
+git add . && git commit -m "chore: Dockerfile + compose polish" && git push
+# 13
+git add . && git commit -m "docs: troubleshooting (ports, db)" && git push
+# 14
+git add . && git commit -m "fix: NPE guards in controller" && git push
+# 15
+git add . && git commit -m "style: checkstyle/format tweaks (comment)" && git push
+# 16
+git add . && git commit -m "perf: add Pageable defaults" && git push
+# 17
+git add . && git commit -m "docs: endpoints table per controller" && git push
+# 18
+git add . && git commit -m "chore: LICENSE placeholder MIT" && git push
+# 19
+git add . && git commit -m "ci: cache maven deps" && git push
+# 20
+git add . && git commit -m "fix: 404/400 error handling advice" && git push
+```
+
+> That’s **60 commits** total (20 per branch).
+> If you want even more, just keep repeating:
+>
+> ```
+> git add .
+> git commit -m "updated"
+> git push
+> ```
+
+---
+
+# 5) (optional) merge branches back into main (normal merges)
+
+```bash
+git checkout main
+git pull
+git merge Babu   -m "merge: Babu branch"
+git merge vijay  -m "merge: vijay branch"
+git merge john   -m "merge: john branch"
+git push
+```
+
+---
+
+# 6) (optional) add a tag
+
+```bash
+git tag -a v0.1.0 -m "first cut"
+git push origin v0.1.0
+```
+
+that’s it. keep doing the **same 3 commands** after each small change:
+`git add .` → `git commit -m "msg"` → `git push`.
+#################################################################################
+##################################################################################################################################################################
+#################################################################################
+#################################################################################
+#################################################################################
+##################################################################################################################################################################
+
+
+
+
+
+cool — I opened your zip and mapped the real files. Here’s a **super-straightforward 60-commit plan** (20 per branch) with **exact edits** you can do. After each tiny change, just run:
+
+```bash
+git add .
+git commit -m "<copy the message>"
+git push
+```
+
+If a file doesn’t exist yet and I’m asking you to “create” it, just create it with the tiny content I mention.
+
+---
+
+# Branch: Babu (20 commits — hygiene, endpoints, docs)
+
+1. **`chore(git): normalize .gitignore for Java/Maven`**
+   Open `./.gitignore` (already exists). Add lines if missing:
+
+   ```
+   target/
+   .idea/
+   .vscode/
+   *.log
+   .DS_Store
+   .env
+   ```
+2. **`chore: add .editorconfig for consistent formatting`**
+   Create `.editorconfig` in repo root with:
+
+   ```
+   root=true
+
+   [*]
+   end_of_line=lf
+   insert_final_newline=true
+   charset=utf-8
+   trim_trailing_whitespace=true
+   indent_style=space
+   indent_size=2
+
+   [*.java]
+   indent_size=4
+   ```
+3. **`docs(README): add Run/Test commands and Java version`**
+   Edit `README.md` → append a “Run” block:
+
+   ```
+   ## Run
+   mvn spring-boot:run
+
+   ## Test
+   mvn -q -DskipITs=false test
+   ```
+4. **`chore(config): review application.yml and add server.port=8080`**
+   Edit `src/main/resources/application.yml` and ensure:
+
+   ```
+   server:
+     port: 8080
+   ```
+5. **`chore(config): add dev profile with SQL logging`**
+   Create `src/main/resources/application-dev.yml`:
+
+   ```
+   spring:
+     jpa:
+       show-sql: true
+       properties:
+         hibernate.format_sql: true
+   ```
+6. **`build(maven): ensure Lombok + MapStruct annotation processing`**
+   Edit `pom.xml` → in `maven-compiler-plugin` add:
+
+   ```
+   <compilerArgs>
+     <arg>-parameters</arg>
+     <arg>-Amapstruct.defaultComponentModel=spring</arg>
+   </compilerArgs>
+   ```
+7. **`feat(controller): add /api/health simple ping`**
+   Create `src/main/java/org/godigit/ikm/controller/HealthController.java`:
+
+   ```java
+   @RestController @RequestMapping("/api/health")
+   public class HealthController {
+     @GetMapping public String ping(){ return "ok"; }
+   }
+   ```
+8. **`docs(api): document article endpoints`**
+   Create `docs/api/articles.md` with a table for `POST/GET /api/articles` and `GET /api/articles/{id}` (paths from your `ArticleController.java`).
+9. **`feat(error): add NotFound handler to return 404 JSON`**
+   Create `src/main/java/org/godigit/ikm/config/GlobalExceptionHandler.java` that maps `NoSuchElementException` (used in services) to 404 with `{ "message": "not found" }`.
+10. **`feat(config): enable CORS for http://localhost:3000`**
+    Create `src/main/java/org/godigit/ikm/config/WebCorsConfig.java`:
+
+    ```java
+    @Configuration
+    public class WebCorsConfig implements WebMvcConfigurer {
+      @Override public void addCorsMappings(CorsRegistry r) {
+        r.addMapping("/**").allowedOrigins("http://localhost:3000").allowedMethods("*");
+      }
+    }
+    ```
+11. **`docs(openapi): add @Operation summaries on ArticleController`**
+    Edit `src/main/java/.../controller/ArticleController.java` and put `@Operation(summary="...")` on each mapping.
+12. **`docs(security): note roles in README`**
+    Edit `README.md` add a small “Roles” section referencing `src/main/java/.../entities/Role.java`.
+13. **`perf(repo): add comment on LIKE index strategy`**
+    Edit `src/main/java/.../repository/ArticleRepository.java` → add a code comment above any `LIKE` queries explaining to add `LOWER(title)` index in DB.
+14. **`refactor(search): clarify naming in ArticleSearchRepositoryImpl`**
+    Edit `src/main/java/.../repository/search/ArticleSearchRepositoryImpl.java` → rename local variables to clearer names (pure rename/no logic change).
+15. **`test(service): confirm ArticleService create flow (happy path)`**
+    Edit `src/test/java/.../service/ArticleServiceTest/ArticleServiceTest.java` → add a simple extra test method asserting `create` returns non-null id.
+16. **`docs(runbook): how to start Postgres via compose`**
+    Create `docs/ops/runbook.md` with a note:
+
+    ```
+    docker-compose up -d
+    ```
+17. **`infra(docker): ensure docker-compose.yml has postgres service`**
+    Your `docker-compose.yml` exists; open it and add/confirm a `postgres` service with `POSTGRES_DB`, `USER`, `PASSWORD` envs.
+18. **`build(maven): ensure failsafe config runs IT tests`**
+    Edit `pom.xml` to ensure `maven-failsafe-plugin` exists with `integration-test`/`verify` goals.
+19. **`style: tidy README headings and add badges placeholder`**
+    Tweak `README.md` headings to `##`.
+20. **`chore: move Insomnia JSONs into docs/insomnia`**
+    Create `docs/insomnia/` and move `New_Insomnia.json`, `articles-insomnia.json`, `knowledge-api-insomnia.json` there. Update `README.md` with the new path.
+
+---
+
+# Branch: vijay (20 commits — search, tags, validation, CI)
+
+1. **`feat(dto): ensure SearchRequest has keyword/title/page/size`**
+   Verify `src/main/java/.../dto/search/SearchRequest.java` already exists; add fields if missing + `@Builder/@Getter`.
+2. **`feat(dto): ensure SearchResult<T> has items/total/page/size`**
+   Open `SearchResult.java`; confirm/getters; add javadoc.
+3. **`feat(service): SearchService LIKE title filter`**
+   Open `src/main/java/.../service/SearchService.java` and ensure `search(req)` uses `ArticleSearchRepository` with `LOWER(title) LIKE`.
+4. **`feat(controller): POST /api/search (body=SearchRequest)`**
+   `SearchController.java` exists: ensure `@PostMapping("/search")` returns `SearchResult<ArticleResponse>`.
+5. **`feat(controller): GET /api/search?keyword=`**
+   In same controller ensure `@GetMapping("/search")` using `@RequestParam String keyword`.
+6. **`feat(validation): @NotBlank on ArticleCreateRequest.title`**
+   Open `src/main/java/.../dto/article/ArticleCreateRequest.java` add `@NotBlank` on `title` and optionally on `content`.
+7. **`feat(entity): Tag(name unique)`**
+   `src/main/java/.../entities/Tag.java` exists; ensure `@Column(unique = true) private String name;`
+8. **`feat(repo): TagRepository findByNameContainingIgnoreCase`**
+   Edit `src/main/java/.../repository/TagRepository.java` add method:
+
+   ```java
+   List<Tag> findByNameContainingIgnoreCase(String q);
+   ```
+9. **`feat(service): TagService create/list/get/delete`**
+   `src/main/java/.../service/TagService.java` exists; ensure CRUD methods and null checks.
+10. **`feat(controller): TagController CRUD`**
+    If not present, create `src/main/java/.../controller/TagController.java` (POST/GET/GET{id}/DELETE{id}); else ensure endpoints exist.
+11. **`docs(api): add docs/api/tags.md`**
+    Endpoint table with example bodies.
+12. **`ci: GitHub Actions for main,Babu,vijay,john`**
+    Create or edit `.github/workflows/maven.yml` to trigger on pushes to these branches and PRs to main.
+13. **`chore: add .env.example with DB vars`**
+    Create `.env.example` in project root (DB\_HOST/USER/PASS/NAME/PORT).
+14. **`feat(api): default pagination on list endpoints`**
+    In `ArticleController` and `SearchController` add `@PageableDefault(size = 10, sort = "createdAt") Pageable pageable`.
+15. **`feat(error): validation error response`**
+    Extend `GlobalExceptionHandler` to map `MethodArgumentNotValidException` to `400` with field errors list.
+16. **`docs(README): Postman/Insomnia quickstart`**
+    Add a section showing base URL `http://localhost:8080/api` and how to import the JSONs from `docs/insomnia/`.
+17. **`test(integration): ContextLoadsIT`**
+    `src/test/java/.../integration/ContextLoadsIT.java` exists; keep as smoke test; add one trivial assertion.
+18. **`chore(logging): add logback-spring.xml`**
+    Create `src/main/resources/logback-spring.xml` reducing SQL logs in prod profile.
+19. **`feat(tag): GET /api/tags?q=`**
+    Add query param search in TagController using `findByNameContainingIgnoreCase`.
+20. **`docs(api): status codes + errors page`**
+    `docs/api/status-codes-and-errors.md` describing 200/201/204/400/404/500 and your error JSON format.
+
+---
+
+# Branch: john (20 commits — versioning, flyway, docker, mapper/tests)
+
+1. **`feat(entity): ArticleVersion fields`**
+   `src/main/java/.../entities/ArticleVersion.java` exists; confirm fields: `articleId`, `versionNo`, `title`, `content`, `createdAt`.
+2. **`feat(repo): ArticleVersionRepository`**
+   `src/main/java/.../repository/ArticleVersionRepository.java` exists; ensure `findByArticleIdOrderByVersionNoDesc(Long id)`.
+3. **`feat(service): create version on update()`**
+   Open `ArticleService.java` → in `update(...)` method, BEFORE saving the article, insert a new `ArticleVersion` row with next version number.
+4. **`feat(controller): PUT /api/articles/{id}`**
+   In `ArticleController.java` ensure a `@PutMapping("/{id}")` exists calling the service update.
+5. **`db(migration): V1__init.sql`**
+   Already present: `src/main/resources/db/migration/V1__init.sql`. Review for tables (articles, tags, departments, versions).
+6. **`db(migration): V2__seed.sql`**
+   Already present; confirm initial seed; add/adjust a comment at top (no breaking changes).
+7. **`db(migration): V3__seed_departments_and_tags.sql`**
+   Already present; confirm inserts; add a comment header.
+8. **`test(mapper): ArticleMapper basic round-trip`**
+   Create `src/test/java/.../mapper/ArticleMapperTest.java` with a simple dto↔entity mapping test using your `ArticleMapper`.
+9. **`feat(tx): mark write methods @Transactional`**
+   In `ArticleService` add `@Transactional` on `create/update/delete` (read methods remain read-only or default).
+10. **`feat(controller): GET /api/articles/{id}/versions`**
+    Add endpoint that returns list of versions for an article using repo method.
+11. **`docs: versioning guide`**
+    Create `docs/versioning.md` explaining when versions are created and how to roll back (manually create new version from an older one).
+12. **`infra(docker): Dockerfile tweak to multi-stage build`**
+    Edit `Dockerfile` to use multi-stage: build with Maven, then run with JRE image.
+13. **`infra(docker): compose app + db`**
+    Edit `docker-compose.yml` to add an `app` service pointing to the built image and depending on `postgres`.
+14. **`feat(api): filter articles by tag via ?tag=`**
+    In `ArticleController` add optional `@RequestParam("tag")` and service method to filter (or leave TODO if not trivial).
+15. **`style(lombok): add @Builder/@NoArgsConstructor where helpful`**
+    Add Lombok builders to DTOs/entities you use often (`ArticleResponse`, `Article`).
+16. **`docs(README): add Flyway notes`**
+    Add snippet to `README.md` explaining Flyway runs on startup and where migrations live.
+17. **`feat(error): introduce NotFoundException`**
+    Create `src/main/java/.../error/NotFoundException.java` (extends `RuntimeException`) and use it in service instead of `NoSuchElementException`.
+18. **`feat(error): map NotFoundException to 404`**
+    Update `GlobalExceptionHandler` to map `NotFoundException` to 404 with `{ "code": "NOT_FOUND", "message": "..."}`
+19. **`ci: cache maven repo in GitHub Actions`**
+    Edit `.github/workflows/maven.yml` to add `actions/cache` step for `~/.m2/repository`.
+20. **`docs(api): endpoints overview consolidated`**
+    Create `docs/api/endpoints-overview.md` summarizing `articles`, `tags`, `departments`, `search`, `versions`, `health`.
+
+---
+
+## Quick reminders
+
+* For **each** item above:
+
+  1. open the exact file(s) mentioned
+  2. make the tiny change
+  3. run the 3 commands:
+
+     ```
+     git add .
+     git commit -m "<message above>"
+     git push
+     ```
+
+* Switch branches as needed:
+
+  ```
+  git checkout Babu
+  # ... do Babu’s 20 commits ...
+  git checkout vijay
+  # ... do vijay’s 20 ...
+  git checkout john
+  # ... do john’s 20 ...
+  ```
+
+* When done, if you want to merge:
+
+  ```
+  git checkout main
+  git merge Babu -m "merge: Babu foundations"
+  git merge vijay -m "merge: search + tags"
+  git merge john  -m "merge: versioning + docker"
+  git push
+  ```
+
+If you want, I can also give you **ready-to-paste content blocks** (exact file bodies) for any of the “create” steps above—say the `GlobalExceptionHandler`, `HealthController`, `logback-spring.xml`, etc.
