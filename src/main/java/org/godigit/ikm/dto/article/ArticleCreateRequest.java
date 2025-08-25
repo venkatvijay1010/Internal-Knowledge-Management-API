@@ -1,5 +1,7 @@
 package org.godigit.ikm.dto.article;
-import jakarta.validation.constraints.*; import java.util.Set;
+import jakarta.validation.constraints.*;
+import java.util.Set;
+
 public record ArticleCreateRequest(
   @NotBlank String title,
   @NotBlank String body,

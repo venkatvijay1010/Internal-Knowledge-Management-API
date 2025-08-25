@@ -1,8 +1,0 @@
-spring:
-  datasource:
-    url: jdbc:postgresql://db:5432/kmapi
-    username: km
-    password: km
-  jpa:
-    hibernate:
-      ddl-auto: validate
