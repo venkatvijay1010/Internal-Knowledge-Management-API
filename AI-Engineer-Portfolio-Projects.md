@@ -1,0 +1,368 @@
+# 10 AI Engineer Portfolio Projects
+### Production-oriented, agentic/RAG-first, buildable solo in 2–4 weeks each
+
+---
+
+## 1. ContractGuard — Multi-Agent Contract Review & Risk Flagging System
+
+**Business problem:** Legal/procurement teams manually review vendor contracts for risky clauses (auto-renewal, unlimited liability, unfavorable termination terms) — slow and inconsistent across reviewers.
+
+**Why companies would use it:** Contract review is a real bottleneck in procurement/legal ops; even catching 80% of risky clauses before a human pass saves hours per contract.
+
+**Why it's more than an LLM wrapper:** Uses a **multi-agent pipeline** (a clause-extraction agent, a risk-classification agent, a redline-suggestion agent) with a shared state graph, structured output validation, and a rules engine that overrides LLM judgment on legally-defined thresholds (e.g., liability caps below $X are always flagged — deterministic, not LLM-decided).
+
+**Key AI concepts:** Multi-agent orchestration, structured output (Pydantic schemas per agent), hybrid rules+LLM decisioning, document chunking strategy for legal text (clause-boundary-aware, not fixed-size).
+
+**Tech stack:** Python, FastAPI, LangGraph (multi-agent graph), PostgreSQL + pgvector, SQLAlchemy, Docker, OpenAI/Anthropic (structured outputs via function calling), Unstructured.io or Docling for PDF parsing.
+
+**Architecture:** Upload contract → parse into clauses → Extraction Agent tags clause types → Risk Agent classifies each against a rulebook (LLM + deterministic threshold checks) → Redline Agent drafts suggested language for HIGH-risk clauses → aggregated report with citations back to exact clause text/page.
+
+**Agent workflow:** Sequential graph with a conditional branch — if a clause's deterministic risk score exceeds a threshold, skip straight to redline generation; otherwise route through a secondary LLM risk assessment first.
+
+**Tools/functions agents can call:** `extract_clauses(doc)`, `classify_risk_deterministic(clause_type, terms)`, `lookup_similar_past_clauses(embedding)`, `draft_redline(clause, risk_reason)`.
+
+**Database:** PostgreSQL (contracts, clauses, risk flags) + pgvector (clause embeddings for "find similar risky clauses across past contracts").
+
+**APIs required:** OpenAI/Anthropic (structured output mode), no external data APIs needed.
+
+**Evaluation:** Labeled set of 30–50 real/synthetic contracts with human-annotated risk flags; measure precision/recall of risk classification vs. ground truth; DeepEval for structured-output schema adherence.
+
+**Deployment:** Docker Compose, FastAPI + background job (Celery) for long-document processing, deployed to Render/Railway.
+
+**Resume bullets:**
+- Built a multi-agent contract review system (LangGraph) combining LLM clause classification with deterministic rule-based risk thresholds.
+- Achieved measurable precision/recall on a labeled risk-flagging benchmark, validated with DeepEval schema checks.
+- Designed clause-boundary-aware chunking and pgvector similarity search to surface comparable risky clauses across a contract corpus.
+
+**Skills demonstrated:** Multi-agent design, structured output enforcement, hybrid deterministic/LLM decisioning, domain-specific document parsing.
+
+**Interview discussion points:** Why not let the LLM decide everything? How do you prevent one agent's error from cascading to the next? How would you handle a 200-page contract within context limits?
+
+---
+
+## 2. QueryForge — Natural Language to SQL Agent with Self-Correction
+
+**Business problem:** Analysts/PMs constantly ask data questions that require an engineer to write SQL. A trustworthy NL-to-SQL agent removes that bottleneck for internal analytics.
+
+**Why companies would use it:** Every company with a data warehouse has this exact request queue; a *reliable* (not just plausible-looking) text-to-SQL agent is a recurring high-value internal tool.
+
+**Why it's more than an LLM wrapper:** Implements a **self-correcting execution loop** — the agent writes SQL, executes it against a real (sandboxed, read-only) DB, catches errors/empty results, and retries with the error message as context. This closed-loop verification is the entire point — a single-shot "write SQL" wrapper is the naive version this project deliberately avoids.
+
+**Key AI concepts:** Tool use with execution feedback loops, schema-grounding (giving the LLM real table/column metadata, not hoping it guesses), guardrails (read-only DB user, query timeout, row limits), multi-step reasoning for joins across tables.
+
+**Tech stack:** Python, FastAPI, LangGraph (agent loop with retry), PostgreSQL (target DB + a separate metadata store), SQLAlchemy (read-only connection), OpenAI/Anthropic function calling, sqlglot for query validation before execution.
+
+**Architecture:** User question → schema-retrieval step (pulls relevant table/column docs via pgvector similarity, not the whole schema) → SQL generation → static validation (sqlglot parses, checks it's SELECT-only) → sandboxed execution → if error/empty, feed error back to LLM for one retry → final answer with the SQL shown for transparency.
+
+**Agent workflow:** Generate → Validate → Execute → (on failure) Diagnose-and-Retry (max 2 retries) → Explain-in-plain-English.
+
+**Tools/functions agent can call:** `get_relevant_schema(question)`, `validate_sql_readonly(query)`, `execute_query_sandboxed(query, row_limit=100)`, `explain_results(rows, question)`.
+
+**Database:** Any OLAP-style Postgres dataset (e.g., a public e-commerce or claims dataset) as the *target* being queried; a second lightweight table storing schema descriptions + embeddings for retrieval.
+
+**APIs required:** OpenAI/Anthropic only.
+
+**Evaluation:** Spider or a custom NL-to-SQL benchmark subset — measure execution accuracy (does the query return the *correct* result, not just valid SQL), track retry rate, track query-safety violations caught by guardrails.
+
+**Deployment:** Docker, read-only DB role enforced at the Postgres permission level (not just app logic) — a real security detail interviewers probe.
+
+**Resume bullets:**
+- Built a self-correcting NL-to-SQL agent (LangGraph) with schema-grounded retrieval, static SQL validation, and execution-feedback retry loops.
+- Enforced query safety via a sandboxed read-only DB role, row limits, and static validation before any execution.
+- Measured execution accuracy against a labeled benchmark, not just syntactic SQL validity.
+
+**Skills demonstrated:** Agentic feedback loops, tool-use guardrails, schema retrieval, DB security at the infrastructure level.
+
+**Interview discussion points:** How do you prevent SQL injection when the LLM writes the query? What happens on ambiguous questions? Execution accuracy vs. syntactic validity — why the distinction matters.
+
+---
+
+## 3. SupportTriage — Agentic Customer Support Router with Escalation Reasoning
+
+**Business problem:** Support tickets need to be classified, prioritized, and routed to the right team/tier — often done manually or with brittle keyword rules.
+
+**Why companies would use it:** Every SaaS company with a support queue needs this; reducing manual triage time directly cuts support cost and response SLA.
+
+**Why it's more than an LLM wrapper:** The agent doesn't just classify — it **reasons about escalation** using a decision tree that mixes deterministic business rules (enterprise customer + billing issue = auto-escalate, no LLM judgment call) with LLM-based sentiment/urgency assessment for ambiguous cases, and can call a tool to check customer tier/history before deciding.
+
+**Key AI concepts:** Structured classification with confidence scores, tool-augmented decision-making, deterministic override rules layered on top of LLM judgment, streaming responses for a live-agent-assist mode.
+
+**Tech stack:** Python, FastAPI (with SSE streaming), LangChain or LangGraph, PostgreSQL, SQLAlchemy, OpenAI/Anthropic, Redis (caching customer lookups).
+
+**Architecture:** Ticket in → Classify (category, urgency, sentiment via structured output) → Tool call: lookup customer tier/history → Deterministic rule check (VIP + critical keyword → auto-escalate, bypass LLM) → else LLM makes the routing call with reasoning trace → route + confidence score returned; low-confidence cases flagged for human review instead of auto-routed.
+
+**Agent workflow:** Classify → Enrich (tool call) → Decide (rules-first, LLM-fallback) → Route-or-Escalate-to-Human.
+
+**Tools/functions agent can call:** `classify_ticket(text)`, `get_customer_context(customer_id)`, `check_escalation_rules(tier, category)`, `route_to_team(team, priority)`.
+
+**Database:** PostgreSQL (tickets, customers, routing history, routing decisions with confidence scores for later analysis).
+
+**APIs required:** OpenAI/Anthropic; optionally a mock CRM API (or a seeded local table standing in for one).
+
+**Evaluation:** Labeled ticket dataset with correct routing/priority; measure routing accuracy, escalation precision (false escalations are costly), and track how often low-confidence human-review fallback correctly caught an ambiguous case.
+
+**Deployment:** Docker, FastAPI with SSE for a live-streaming "agent is thinking" UI feel.
+
+**Resume bullets:**
+- Built an agentic support-triage system combining deterministic escalation rules with LLM-based classification for ambiguous cases.
+- Designed a confidence-scored routing pipeline that defers to human review below a calibrated threshold rather than forcing every decision through the LLM.
+- Streamed agent reasoning via SSE for a live-assist interface.
+
+**Skills demonstrated:** Hybrid rule/LLM decisioning, confidence calibration, tool-augmented enrichment, streaming API design.
+
+**Interview discussion points:** How do you calibrate the confidence threshold? What's the cost of a false auto-escalation vs. a missed one? Why rules-first instead of LLM-first?
+
+---
+
+## 4. CodeSentry — AI Code Review Agent with Static Analysis Grounding
+
+**Business problem:** PR review is a bottleneck; junior engineers especially benefit from fast, consistent first-pass feedback before a human reviewer's time is spent.
+
+**Why companies would use it:** Faster PR cycles, more consistent style/security feedback, and it scales review capacity without adding headcount.
+
+**Why it's more than an LLM wrapper:** Grounds LLM commentary in **actual static analysis output** (ruff/bandit/semgrep results) rather than having the LLM guess at bugs from raw diff text — the LLM's job is to *explain and prioritize* real findings plus catch logic issues static tools miss, not to hallucinate a security review from scratch.
+
+**Key AI concepts:** Tool-grounded generation (LLM output constrained by real analyzer results), structured output (severity-ranked findings), RAG over the existing codebase for context-aware suggestions ("this violates a pattern used elsewhere in the repo").
+
+**Tech stack:** Python, FastAPI, LangChain, PostgreSQL + pgvector (codebase embeddings), GitHub API (webhook + PR comments), semgrep/bandit/ruff as subprocess tools, OpenAI/Anthropic.
+
+**Architecture:** PR webhook → fetch diff → run static analyzers → embed changed files, retrieve similar existing code from the repo (pgvector) for pattern-consistency checks → LLM synthesizes a prioritized review combining analyzer findings + pattern context + its own logic-level read → posts as PR comment via GitHub API.
+
+**Agent workflow:** Fetch-Diff → Run-Static-Tools (parallel) → Retrieve-Similar-Code → Synthesize-Review → Post-Comment.
+
+**Tools/functions agent can call:** `run_static_analysis(diff)`, `retrieve_similar_code(embedding, repo)`, `post_pr_comment(pr_id, findings)`, `get_file_history(path)`.
+
+**Database:** PostgreSQL + pgvector for codebase embeddings (re-indexed on merge to main).
+
+**APIs required:** GitHub API (webhooks + comments), OpenAI/Anthropic.
+
+**Evaluation:** Run against a set of PRs with known injected bugs/issues; measure recall of injected issues, false-positive rate on clean PRs, and compare LLM-only vs. tool-grounded review quality as an ablation.
+
+**Deployment:** Docker, deployed as a GitHub App or webhook receiver (Render/Railway), with a queue (Celery) since analysis can take time on large diffs.
+
+**Resume bullets:**
+- Built an AI code review agent grounding LLM commentary in real static-analysis output (semgrep, bandit, ruff) instead of unconstrained generation.
+- Implemented RAG over the target codebase to surface pattern-consistency issues from prior code.
+- Ran an ablation comparing tool-grounded vs. ungrounded review quality on a benchmark of PRs with known injected bugs.
+
+**Skills demonstrated:** Tool-grounded LLM generation, RAG over code, GitHub API integration, ablation-style evaluation design.
+
+**Interview discussion points:** Why ground the LLM in static analysis instead of just prompting it to "review this code"? How do you handle very large diffs within context limits? False-positive cost vs. false-negative cost trade-off.
+
+---
+
+## 5. ClaimsResearch (PolicyMind-class) — Agentic RAG over Structured + Unstructured Insurance Data
+
+*(This is the project already scoped in this conversation — included here for completeness of the set of 10.)*
+
+**Business problem:** Adjusters need answers spanning both unstructured policy documents and structured claims history — "what's covered" (documents) and "what's our precedent" (database).
+
+**Why companies would use it:** Reduces research time per claim; a single interface replacing "open 3 systems and cross-reference manually."
+
+**Why it's more than an LLM wrapper:** Agent **routes between retrieval and SQL tools** based on query type, chains multiple tool calls, and does deterministic math (coverage-limit calculations) in code rather than trusting LLM arithmetic.
+
+**Key AI concepts:** Agentic tool routing, hybrid search (vector + keyword/BM25 over documents), SQL tool use, citation-grounded generation, streaming.
+
+**Tech stack:** Python, FastAPI, LangGraph, LlamaIndex/LangChain, PostgreSQL + pgvector, SQLAlchemy, OpenAI/Anthropic/Ollama.
+
+*(Full architecture/agent workflow/tools/evaluation as detailed earlier in this conversation.)*
+
+**Resume bullets:** *(as previously generated — see above in this conversation)*
+
+**Interview discussion points:** Hybrid search vs. pure vector search trade-offs; why deterministic math instead of LLM math; citation grounding to prevent hallucination.
+
+---
+
+## 6. GuardRail-Eval — An LLM Evaluation & Guardrails Platform (Meta Project)
+
+**Business problem:** Teams shipping LLM features have no systematic way to catch regressions (prompt changes silently breaking output quality) or unsafe outputs before production.
+
+**Why companies would use it:** Every company running LLMs in production needs this exact tooling — it's infrastructure, not a feature, which makes it a strong "I understand production AI" signal.
+
+**Why it's more than an LLM wrapper:** This project **is** the evaluation/guardrail layer other LLM apps sit behind — it doesn't call an LLM to answer user questions, it calls LLMs (and deterministic checks) to *judge* other systems' outputs. Fundamentally different skill than a RAG app.
+
+**Key AI concepts:** LLM-as-judge evaluation, regression testing for prompts, guardrails (PII detection, toxicity, jailbreak/prompt-injection detection), structured scoring rubrics, statistical significance in eval comparisons.
+
+**Tech stack:** Python, FastAPI, PostgreSQL (eval run history), DeepEval/RAGAS as evaluation libraries (or build custom scorers), Presidio for PII detection, OpenAI/Anthropic (as both target and judge models), Docker.
+
+**Architecture:** Ingest a "test suite" (prompt + expected-behavior pairs) → run target system against each case → score via multiple methods (LLM-as-judge, deterministic regex/PII checks, semantic similarity to reference) → store results with versioning so you can diff eval runs across prompt/model changes → dashboard showing regression trends.
+
+**Agent workflow:** N/A primarily (this is an evaluation harness, not itself agentic) — though it can include a lightweight "red-teaming agent" that generates adversarial test cases automatically.
+
+**Tools/functions:** `run_eval_case(prompt, expected)`, `score_llm_judge(output, rubric)`, `detect_pii(text)`, `detect_prompt_injection(text)`, `diff_eval_runs(run_a, run_b)`.
+
+**Database:** PostgreSQL — eval suites, run results, score history over time (this is the part that makes it "platform" not "script").
+
+**APIs required:** OpenAI/Anthropic (target + judge), Presidio (local, no API).
+
+**Evaluation:** The project's evaluation strategy IS the product — validate judge-model scoring against human-labeled ground truth to establish judge reliability (inter-rater agreement) before trusting it for regression detection.
+
+**Deployment:** Docker, FastAPI dashboard, could run as a CI step (eval-gate on prompt changes, similar to test-gating code).
+
+**Resume bullets:**
+- Built an LLM evaluation platform running regression tests across prompt/model versions using LLM-as-judge scoring validated against human-labeled ground truth.
+- Implemented automated guardrails (PII detection, prompt-injection detection) as deterministic pre/post-processing layers around LLM calls.
+- Designed a CI-integrable eval-gate pattern, analogous to test-gating for traditional code changes.
+
+**Skills demonstrated:** LLM evaluation methodology, guardrail engineering, judge-model calibration, systems thinking about production AI risk.
+
+**Interview discussion points:** How do you know your judge model is trustworthy? What's inter-rater reliability and why does it matter here? How would this integrate into a CI/CD pipeline?
+
+---
+
+## 7. DocuDiff — Multi-Document Comparative Reasoning Agent
+
+**Business problem:** Comparing multiple versions of a document (policy revisions, RFP responses, compliance filings) to find material differences is tedious and error-prone manually.
+
+**Why companies would use it:** Compliance, procurement, and legal teams need to know *what changed and why it matters*, not just a text diff — a raw diff tool can't tell you a clause change increases liability exposure.
+
+**Why it's more than an LLM wrapper:** Combines **structural diffing** (deterministic, code-based) with LLM reasoning about the *significance* of each change — the LLM never sees raw full documents, only the pre-computed diff segments, which controls cost and hallucination risk.
+
+**Key AI concepts:** Hybrid deterministic+LLM pipelines, structured output for change classification (material/cosmetic/ambiguous), long-document handling strategy, cost-aware architecture (diff first, LLM only on changed segments).
+
+**Tech stack:** Python, FastAPI, difflib/custom structural diff for document sections, LangChain for the reasoning layer, PostgreSQL + pgvector, OpenAI/Anthropic, Docker.
+
+**Architecture:** Two document versions in → structural parse into sections/clauses → deterministic diff identifies changed segments only → LLM classifies each change (material/cosmetic) with reasoning → aggregated significance report, sorted by impact.
+
+**Agent workflow:** Parse → Diff (deterministic) → Classify-Each-Change (LLM, parallelizable) → Rank-by-Significance → Summarize.
+
+**Tools/functions:** `structural_diff(doc_a, doc_b)`, `classify_change_significance(old_text, new_text, context)`, `rank_changes(classified_list)`.
+
+**Database:** PostgreSQL (document versions, diffs, classifications) + pgvector optional (for "has this type of change appeared before" pattern matching).
+
+**APIs required:** OpenAI/Anthropic only.
+
+**Evaluation:** Synthetic document pairs with known injected material vs. cosmetic changes; measure classification accuracy and check the system doesn't flag every change as material (a lazy-but-safe failure mode worth explicitly testing for).
+
+**Deployment:** Docker, FastAPI, straightforward — no queue needed unless documents are very large.
+
+**Resume bullets:**
+- Built a document comparison agent combining deterministic structural diffing with LLM-based significance classification, limiting LLM calls to changed segments only for cost control.
+- Designed a synthetic benchmark of material vs. cosmetic document changes to validate classification accuracy and catch over-flagging failure modes.
+- Reduced hallucination risk by never passing full documents to the LLM — only pre-diffed, structurally isolated segments.
+
+**Skills demonstrated:** Cost-aware LLM architecture, hybrid deterministic/AI pipelines, benchmark design for a non-standard task.
+
+**Interview discussion points:** Why diff before the LLM instead of asking the LLM to find differences itself? How do you handle changes that span section boundaries? Cost implications of full-document vs. segment-level LLM calls.
+
+---
+
+## 8. OpsCopilot — Multi-Agent Incident Response Assistant
+
+**Business problem:** During a production incident, engineers waste time correlating logs, metrics, and past incident history while under time pressure.
+
+**Why companies would use it:** Faster mean-time-to-resolution directly translates to revenue/reputation impact; this is a high-visibility "AI for engineering ops" use case companies are actively investing in.
+
+**Why it's more than an LLM wrapper:** A **multi-agent system** — a Log-Analysis agent (queries structured log data), a Metrics agent (queries a time-series store), and a Precedent agent (RAG over past incident postmortems) — coordinated by an orchestrator that synthesizes a single incident summary with suggested next steps, each claim traceable to a specific tool call's output.
+
+**Key AI concepts:** Multi-agent coordination (LangGraph supervisor pattern), tool use across heterogeneous data sources (logs, metrics, documents), citation/traceability of every claim to source data, streaming for real-time incident use.
+
+**Tech stack:** Python, FastAPI (SSE streaming), LangGraph (supervisor + worker agents), PostgreSQL + pgvector (postmortem RAG), a time-series store (or simulated metrics table), OpenAI/Anthropic.
+
+**Architecture:** Incident description in → Supervisor agent dispatches to Log-Analysis, Metrics, and Precedent sub-agents in parallel → each returns findings with source citations → Supervisor synthesizes a unified summary + ranked hypotheses + links to similar past incidents.
+
+**Agent workflow:** Supervisor dispatches parallel sub-agent calls → sub-agents return structured findings → Supervisor synthesizes, resolving any contradicting signals explicitly rather than silently picking one.
+
+**Tools/functions:** `query_logs(service, time_range, filters)`, `query_metrics(service, time_range)`, `search_past_incidents(embedding)`, `synthesize_summary(findings_list)`.
+
+**Database:** PostgreSQL (incidents, postmortems + pgvector embeddings) + a metrics table (simulated Prometheus-style data works fine for a portfolio project).
+
+**APIs required:** OpenAI/Anthropic only (data sources can be seeded/simulated for a portfolio demo).
+
+**Evaluation:** Simulated incident scenarios with known root causes; measure whether the system's ranked hypotheses include the actual root cause in the top N, and whether every claim in the summary is correctly traceable to a real source.
+
+**Deployment:** Docker, FastAPI with SSE streaming for a live "agents are investigating" UX.
+
+**Resume bullets:**
+- Built a multi-agent incident-response assistant (LangGraph supervisor pattern) coordinating parallel log-analysis, metrics, and precedent-search agents.
+- Enforced citation traceability so every synthesized claim links back to a specific tool call's source data.
+- Evaluated root-cause hypothesis ranking against a benchmark of simulated incidents with known causes.
+
+**Skills demonstrated:** Multi-agent supervisor architecture, parallel tool orchestration, traceability/citation enforcement, real-time streaming UX.
+
+**Interview discussion points:** Supervisor vs. fully decentralized multi-agent patterns — trade-offs. How do you resolve contradicting sub-agent findings? Why citation-enforce every claim?
+
+---
+
+## 9. SchemaSense — Structured Data Extraction Pipeline with Confidence-Based Human-in-the-Loop Routing
+
+**Business problem:** Extracting structured data from messy, varied-format documents (invoices, forms, receipts) at scale — fully manual is slow, fully automated risks silent errors on edge cases.
+
+**Why companies would use it:** Any company doing document-heavy data entry (finance, logistics, healthcare admin) needs this; the human-in-the-loop routing is what makes it deployable in a real business (vs. a demo that just "extracts stuff").
+
+**Why it's more than an LLM wrapper:** The core engineering problem is the **confidence-based routing layer** — extraction confidence per field determines whether it's auto-accepted, needs a second LLM pass with a different prompt strategy, or routes to a human review queue. This calibration/routing logic, not the extraction call itself, is the differentiator.
+
+**Key AI concepts:** Structured output extraction, confidence calibration, self-consistency checks (run extraction twice, compare, flag disagreement), active-learning-style human-in-the-loop routing, few-shot prompt strategies per document type.
+
+**Tech stack:** Python, FastAPI, LangChain (structured output), PostgreSQL, SQLAlchemy, OpenAI/Anthropic (function calling/structured output mode), Docker, a simple review-queue UI (could be a minimal HTML/React page).
+
+**Architecture:** Document in → format-specific extraction (few-shot prompt per document type) → self-consistency check (extract twice, compare field-by-field) → per-field confidence score → high-confidence fields auto-accepted, low-confidence/disagreeing fields routed to a human review queue → human corrections logged and used to refine few-shot examples over time.
+
+**Agent workflow:** Extract (x2 for consistency check) → Score-Confidence-Per-Field → Route (auto-accept / human-review) → Log-Corrections-for-Future-Tuning.
+
+**Tools/functions:** `extract_structured(document, schema, few_shot_examples)`, `compute_field_confidence(extraction_a, extraction_b)`, `route_to_review_queue(low_confidence_fields)`, `log_human_correction(field, original, corrected)`.
+
+**Database:** PostgreSQL (documents, extractions, confidence scores, human corrections — the corrections table is what enables the "improves over time" story).
+
+**APIs required:** OpenAI/Anthropic only.
+
+**Evaluation:** Labeled ground-truth extraction dataset; measure field-level accuracy, false-auto-accept rate (most costly failure — a wrong field that wasn't flagged), and how self-consistency-based confidence correlates with actual error rate.
+
+**Deployment:** Docker, FastAPI + a minimal review queue interface, Celery for batch document processing.
+
+**Resume bullets:**
+- Built a structured-data extraction pipeline with self-consistency-based confidence scoring, routing low-confidence fields to human review instead of silent auto-acceptance.
+- Measured correlation between consistency-check confidence and actual extraction error rate to calibrate the auto-accept threshold.
+- Designed a correction-logging loop feeding human fixes back into few-shot prompt refinement.
+
+**Skills demonstrated:** Confidence calibration, human-in-the-loop system design, structured extraction, active-learning-adjacent architecture.
+
+**Interview discussion points:** Why self-consistency instead of a single extraction call? How do you set the auto-accept confidence threshold, and what's the cost of getting it wrong in each direction?
+
+---
+
+## 10. LocalRAG-Bench — On-Premise/Local-LLM RAG System with Cost & Latency Benchmarking
+
+**Business problem:** Companies with data-sensitivity constraints (healthcare, finance, legal) can't send documents to external LLM APIs — they need RAG systems running entirely on local/self-hosted models, and need to know the real accuracy/latency/cost trade-off vs. hosted APIs before committing.
+
+**Why companies would use it:** Data residency and compliance requirements make this a real, common constraint — not a hypothetical; and the benchmarking angle (this system vs. that system, quantified) is exactly the kind of decision-support companies pay for.
+
+**Why it's more than an LLM wrapper:** The deliverable isn't just a working local RAG system — it's a **quantified comparison framework**: same RAG pipeline, swappable between local (Ollama, e.g. Llama 3.1/Mistral) and hosted (OpenAI/Anthropic) backends, with systematic measurement of retrieval quality, generation quality, latency, and cost per query across both.
+
+**Key AI concepts:** Local LLM deployment/serving, embedding model selection (local embedding models vs. hosted), RAG evaluation (RAGAS), quantization trade-offs, latency/cost benchmarking methodology.
+
+**Tech stack:** Python, FastAPI, Ollama (local serving), LlamaIndex/LangChain, PostgreSQL + pgvector, local embedding model (e.g., BGE or nomic-embed via sentence-transformers) vs. OpenAI embeddings for comparison, Docker.
+
+**Architecture:** Identical RAG pipeline (ingest → chunk → embed → retrieve → generate) instantiated twice — once fully local (Ollama + local embeddings), once hosted (OpenAI/Anthropic + hosted embeddings) — same document set, same eval questions, run through both, results compared side-by-side.
+
+**Agent workflow:** N/A agentic-specific — this is a RAG-and-benchmarking project, not an agent project; the "workflow" is the parallel dual-pipeline comparison itself.
+
+**Tools/functions:** `ingest_and_embed(docs, embedding_backend)`, `retrieve(query, backend)`, `generate_answer(query, context, llm_backend)`, `benchmark_run(question_set, backend)`.
+
+**Database:** PostgreSQL + pgvector, with a backend-tagged column so local and hosted embeddings can be stored/queried side-by-side in the same schema.
+
+**APIs required:** OpenAI/Anthropic (for the hosted comparison arm); Ollama runs locally, no external API.
+
+**Evaluation:** RAGAS metrics (faithfulness, answer relevance, context precision/recall) computed for both backends on the same question set; explicit latency (p50/p95) and per-query cost comparison table — this comparison table IS the project's core deliverable.
+
+**Deployment:** Docker Compose including an Ollama container; documented hardware requirements for local inference (a real, often-overlooked deployment consideration).
+
+**Resume bullets:**
+- Built a dual-backend RAG benchmarking system comparing local (Ollama) vs. hosted (OpenAI/Anthropic) LLMs on identical retrieval pipelines.
+- Measured RAGAS faithfulness/relevance/context-precision metrics alongside latency and cost across both backends on the same question set.
+- Documented quantized local-model trade-offs for data-residency-constrained deployment scenarios.
+
+**Skills demonstrated:** Local LLM deployment, RAG evaluation methodology, comparative benchmarking design, cost/latency-aware architecture decisions.
+
+**Interview discussion points:** When does local deployment make sense despite lower quality? How do quantized models affect retrieval-augmented accuracy specifically vs. general chat quality? What's your RAGAS faithfulness score actually measuring?
+
+---
+
+## Quick-pick guide: which 2 to actually build
+
+Given you're already building **ClaimForge AI** (backend-heavy) and the earlier-scoped **PolicyMind/ClaimsResearch** (#5, agentic RAG), the highest-leverage additions from this list, ranked:
+
+1. **#2 QueryForge (NL-to-SQL agent)** — the self-correction/execution-feedback loop is a genuinely differentiated, hard-to-fake skill signal, and it's the most "clean, scoped, demoable in an interview" of the ten.
+2. **#6 GuardRail-Eval** — uniquely valuable because it proves you understand *production AI risk*, not just "can build a RAG app" — this is what separates a mid-level from senior-leaning AI Engineer portfolio.
+
+Both are buildable in 2–3 weeks each, share almost no infra with ClaimForge (so they read as genuinely distinct projects, not variations), and together with PolicyMind give you three projects covering: agentic RAG, tool-use with execution feedback, and AI evaluation/safety — the three pillars most AI Engineer interview loops actually probe.
