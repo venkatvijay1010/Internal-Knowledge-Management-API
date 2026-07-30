@@ -26,9 +26,6 @@ Insurance carriers and TPAs (Third-Party Administrators) process thousands of cl
 - **In-house legacy claims systems** (what most mid-size insurers run today) — rules-engine only, no LLM-based extraction, brittle OCR.
 - **Gap ClaimForge targets**: a lean, self-hostable, open-architecture claims intelligence layer that a mid-size insurer or TPA could deploy without a 7-figure vendor contract — this is the "why would a company pay for it" argument, and it's also exactly the story that makes this portfolio project credible to interviewers, since you're not reinventing a CRUD app, you're addressing a real gap.
 
-### Why This Domain (vs. the other options)
-Given your production experience at Digit Insurance (claims workflows, policy validation, document handling, AI wrapper integrations), **Claims Processing + AI Document Intelligence** is the domain where your resume narrative and the project narrative reinforce each other in an interview — you're not learning a new domain from scratch, you're re-implementing a real problem you've seen in production, in a new stack.
-
 ---
 
 ## 2. System Architecture
